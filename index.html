@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en-us">
+  <head>
+    <meta charset="UTF-8">
+    <title>Cppsiberia16quiz by sdukshis</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+  </head>
+  <body>
+    <section class="page-header">
+      <h1 class="project-name">Cppsiberia16quiz</h1>
+      <h2 class="project-tagline">cpp Siberia 2016 quiz</h2>
+      <a href="https://github.com/sdukshis/cppSiberia16Quiz" class="btn">View on GitHub</a>
+      <a href="https://github.com/sdukshis/cppSiberia16Quiz/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/sdukshis/cppSiberia16Quiz/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
+
+    <section class="main-content">
+      <h2>
+<a id="Тестовое-задание-на-рефакторинг-кода-c" class="anchor" href="#%D0%A2%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D0%BE%D0%B5-%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BD%D0%B0-%D1%80%D0%B5%D1%84%D0%B0%D0%BA%D1%82%D0%BE%D1%80%D0%B8%D0%BD%D0%B3-%D0%BA%D0%BE%D0%B4%D0%B0-c" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Тестовое задание на рефакторинг кода C++</h2>
+
+<p>В ходе разработки элемета текстового редактора на языке С++ программист решил использовать свои знания об семантике перемещений и написал код, приведённый ниже.</p>
+
+<div class="highlight highlight-source-c++"><pre>#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>string<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>list<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>vector<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>iostream<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>iterator<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>algorithm<span class="pl-pds">&gt;</span></span>
+#<span class="pl-k">include</span> <span class="pl-s"><span class="pl-pds">&lt;</span>fstream<span class="pl-pds">&gt;</span></span>
+
+<span class="pl-k">class</span> <span class="pl-en">Text</span> {
+<span class="pl-k">public:</span>
+    <span class="pl-en">Text</span>() {
+        std::clog &lt;&lt; __PRETTY_FUNCTION__ &lt;&lt; <span class="pl-s"><span class="pl-pds">'</span><span class="pl-cce">\n</span><span class="pl-pds">'</span></span>;
+    }
+
+    <span class="pl-en">Text</span>(<span class="pl-k">const</span> Text&amp; other)
+        : lines{other.<span class="pl-smi">lines</span>} {
+        std::clog &lt;&lt; __PRETTY_FUNCTION__ &lt;&lt; <span class="pl-s"><span class="pl-pds">'</span><span class="pl-cce">\n</span><span class="pl-pds">'</span></span>;
+    }
+
+    <span class="pl-en">Text</span>(Text&amp;&amp; other)
+        : lines{other.<span class="pl-smi">lines</span>} {
+        std::clog &lt;&lt; __PRETTY_FUNCTION__ &lt;&lt; <span class="pl-s"><span class="pl-pds">'</span><span class="pl-cce">\n</span><span class="pl-pds">'</span></span>;
+    }
+
+    Text&amp; <span class="pl-k">operator</span>=(<span class="pl-k">const</span> Text&amp; other) {
+        std::clog &lt;&lt; __PRETTY_FUNCTION__ &lt;&lt; <span class="pl-s"><span class="pl-pds">'</span><span class="pl-cce">\n</span><span class="pl-pds">'</span></span>;
+        lines = other.<span class="pl-smi">lines</span>;
+        <span class="pl-k">return</span> *<span class="pl-v">this</span>;
+    }
+
+    Text&amp; <span class="pl-k">operator</span>=(Text&amp;&amp; other) {
+        std::clog &lt;&lt; __PRETTY_FUNCTION__ &lt;&lt; <span class="pl-s"><span class="pl-pds">'</span><span class="pl-cce">\n</span><span class="pl-pds">'</span></span>;
+        lines = other.<span class="pl-smi">lines</span>;
+        <span class="pl-k">return</span> *<span class="pl-v">this</span>;
+    }
+
+    <span class="pl-k">friend</span> std::istream&amp; <span class="pl-k">operator</span>&gt;&gt;(std::istream&amp; stream, Text&amp; text) {
+        text.<span class="pl-smi">lines</span>.<span class="pl-c1">clear</span>();
+        std::string line;
+        <span class="pl-k">while</span> (!<span class="pl-c1">std::getline</span>(stream, line).<span class="pl-c1">fail</span>()) {
+            text.<span class="pl-smi">lines</span>.<span class="pl-c1">emplace_back</span>(<span class="pl-c1">std::move</span>(line));
+        }
+        <span class="pl-k">return</span> stream;
+    }
+
+    <span class="pl-k">friend</span> std::ostream&amp; <span class="pl-k">operator</span>&lt;&lt;(std::ostream&amp; stream, <span class="pl-k">const</span> Text&amp; text) {
+        <span class="pl-c1">std::copy</span>(text.<span class="pl-smi">lines</span>.<span class="pl-c1">begin</span>(), text.<span class="pl-smi">lines</span>.<span class="pl-c1">end</span>(),
+                  std::ostream_iterator&lt;std::string&gt;(stream, <span class="pl-s"><span class="pl-pds">"</span><span class="pl-cce">\n</span><span class="pl-pds">"</span></span>));
+        <span class="pl-k">return</span> stream;
+    }
+
+<span class="pl-k">private:</span>
+    std::list&lt;std::string&gt; lines;
+};
+
+<span class="pl-k">int</span> <span class="pl-en">main</span>(<span class="pl-k">int</span> argc, <span class="pl-k">const</span> <span class="pl-k">char</span>* argv[]) {
+    std::vector&lt;Text&gt; sources;
+    Text text;
+    <span class="pl-k">for</span> (<span class="pl-k">int</span> i = <span class="pl-c1">1</span>; i &lt; argc; ++i) {
+        std::ifstream{argv[i]} &gt;&gt; text;
+        sources.<span class="pl-c1">push_back</span>(text);
+    }
+
+    <span class="pl-k">return</span> <span class="pl-c1">0</span>;
+}</pre></div>
+
+<p>При попытке выполнить эту программу с четырьмя аргументами он получил в ответ неожиданый результат.</p>
+
+<pre><code>Text::Text()
+Text::Text(const Text &amp;)
+Text::Text(const Text &amp;)
+Text::Text(const Text &amp;)
+Text::Text(const Text &amp;)
+Text::Text(const Text &amp;)
+Text::Text(const Text &amp;)
+Text::Text(const Text &amp;)
+</code></pre>
+
+<p>Его конструктор перемещения не был вызван ни один раз.</p>
+
+<p><strong>Задание:</strong> объясните почему компилятор не использовал конструктор перемещения и предложите изменения в исходном коде, которые позволят исправить эту ситуацию.</p>
+
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/sdukshis/cppSiberia16Quiz">Cppsiberia16quiz</a> is maintained by <a href="https://github.com/sdukshis">sdukshis</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
+      </footer>
+
+    </section>
+
+  
+  </body>
+</html>
